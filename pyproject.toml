@@ -25,5 +25,12 @@ dependencies = [
     "fhir.resources>=6.4.0", 
     "bokeh",
     "marimo",
-    "jupyterlab"
+    "jupyterlab",
+    "selenium",
+    "pillow"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
 ]
