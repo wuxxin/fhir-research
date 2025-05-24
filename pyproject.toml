@@ -1,0 +1,15 @@
+[build-system]
+# make version from git
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# disable automatic module finding
+py-modules = ["__main__"]
+
+[tool.setuptools_scm]
+# empty
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
