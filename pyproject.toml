@@ -13,3 +13,17 @@ py-modules = ["__main__"]
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[project]
+name = "medical_data_science_project"
+version = "0.1.0"
+description = "A project for FHIR data handling, analysis, and visualization."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pandas",
+    "fhir.resources>=6.4.0", 
+    "bokeh",
+    "marimo",
+    "jupyterlab"
+]
