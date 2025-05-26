@@ -17,12 +17,12 @@ help:
 # Assumes uv.lock is present and managed
 install: $(VENV_DIR)/pyvenv.cfg
 
-$(VENV_DIR)/pyvenv.cfg: pyproject.toml uv-requirements.txt
+$(VENV_DIR)/pyvenv.cfg: pyproject.toml uv.lock
 	@echo "Creating virtual environment in $(VENV_DIR) using uv..."
 	@uv venv $(VENV_DIR)
-	@echo "Installing dependencies from uv-requirements.txt using uv..."
+	@echo "Installing dependencies from uv.lock using uv..."
 	# Let's use the same uv for sync.
-	@uv pip sync --python $(VENV_DIR)/bin/python uv-requirements.txt
+	@uv pip sync --python $(VENV_DIR)/bin/python uv.lock
 	@echo "Installation complete. Activate with: source $(VENV_DIR)/bin/activate"
 	@# Touch a file inside the venv to signify completion for make, pyvenv.cfg is standard.
 	@# No, pyvenv.cfg is created by 'uv venv'. The rule depends on it.
