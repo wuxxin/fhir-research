@@ -14,7 +14,7 @@ import os
 from bokeh.io import export_png # For saving plot
 
 # Assuming Marimo is run from the project root, or src is in PYTHONPATH
-from src.medical_data_science.fhir_utils import (
+from src.mds.fhirutils import (
     create_patient_lab_bundle,
     flatten_fhir_bundle,
 )
@@ -101,36 +101,38 @@ def get_hdl_dataframe():
     # Could also return bundle_json and df for inspection in other cells.
     return hdl_df_prepared, bundle_json, df # Return all for potential inspection
 
-# Call the function to load data for interactive mode
-# Unpack the results; hdl_df is the primary one for plotting
-hdl_df, generated_bundle_json, raw_df_generated = get_hdl_dataframe.value
-
-mo.md(f"""
-Data generation function defined.
-- Initial HDL DataFrame shape: {hdl_df.shape if hdl_df is not None else 'N/A'}
-- FHIR Bundle ID: {generated_bundle_json.get('id') if generated_bundle_json else 'N/A'}
-""")
+# Conditional execution for Marimo interactive mode
+if mo.get_context().execution_mode == "notebook":
+    hdl_df, generated_bundle_json, raw_df_generated = get_hdl_dataframe.value
+    mo.md(f"""
+    Data generation function defined.
+    - Initial HDL DataFrame shape: {hdl_df.shape if hdl_df is not None else 'N/A'}
+    - FHIR Bundle ID: {generated_bundle_json.get('id') if generated_bundle_json else 'N/A'}
+    """)
+else: # Provide placeholders if not in notebook mode, or ensure they are not needed globally
+    hdl_df, generated_bundle_json, raw_df_generated = None, None, None
 ```
 
 ```python
 # Cell 3: Data Inspection (Interactive)
 
-mo.md("### Prepared HDL DataFrame (`hdl_df`)")
-if hdl_df is not None and not hdl_df.empty:
-    mo.ui.table(hdl_df[['Observation_effectiveDateTime', 'Observation_valueQuantity_value']].head(), selection=None)
-else:
-    mo.md("`hdl_df` is empty or not yet loaded.")
+if mo.get_context().execution_mode == "notebook":
+    mo.md("### Prepared HDL DataFrame (`hdl_df`)")
+    if hdl_df is not None and not hdl_df.empty:
+        mo.ui.table(hdl_df[['Observation_effectiveDateTime', 'Observation_valueQuantity_value']].head(), selection=None)
+    else:
+        mo.md("`hdl_df` is empty or not yet loaded.")
 
-mo.md("### Raw Flattened DataFrame (`raw_df_generated`) - First 5 rows")
-if raw_df_generated is not None and not raw_df_generated.empty:
-    mo.ui.table(raw_df_generated.head(), selection=None)
-else:
-    mo.md("`raw_df_generated` is empty or not yet loaded.")
+    mo.md("### Raw Flattened DataFrame (`raw_df_generated`) - First 5 rows")
+    if raw_df_generated is not None and not raw_df_generated.empty:
+        mo.ui.table(raw_df_generated.head(), selection=None)
+    else:
+        mo.md("`raw_df_generated` is empty or not yet loaded.")
 
-# Full bundle JSON is large, so display only if a button is pressed (example)
-# show_bundle = mo.ui.button(label="Show Full Bundle JSON")
-# if show_bundle.value:
-#    mo.accordion({"Generated FHIR Bundle (JSON)": generated_bundle_json})
+    # Full bundle JSON is large, so display only if a button is pressed (example)
+    # show_bundle = mo.ui.button(label="Show Full Bundle JSON")
+    # if show_bundle.value:
+    #    mo.accordion({"Generated FHIR Bundle (JSON)": generated_bundle_json})
 ```
 
 ```python
@@ -182,9 +184,12 @@ def create_hdl_plot(data_frame: pd.DataFrame):
     p.legend.location = "top_left"
     return p
 
-# Interactive plot display for Marimo
-# This uses the hdl_df obtained from get_hdl_dataframe.value in Cell 2
-plot_figure = create_hdl_plot(hdl_df) 
+if mo.get_context().execution_mode == "notebook":
+    # Ensure hdl_df is loaded for notebook mode, it might be None otherwise
+    # This hdl_df should be the one from the guarded block in Cell 2
+    plot_figure = create_hdl_plot(hdl_df) 
+else:
+    plot_figure = None # Or some other placeholder
 # Marimo will render Bokeh plots directly if it's the last expression or mo.output.bokeh()
 # mo.output.bokeh(plot_figure) # Explicit display if needed
 ```
@@ -195,6 +200,9 @@ plot_figure = create_hdl_plot(hdl_df)
 # This block will only run when the script is executed directly (e.g., python your_script.py)
 # It will not run when Marimo is running the notebook interactively.
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    
     parser = argparse.ArgumentParser(description="Generate HDL plot and optionally export it.")
     parser.add_argument(
         "--output-image", 
@@ -244,31 +252,42 @@ if __name__ == "__main__":
         
         # End of re-defined logic for script mode.
 
-        if _script_hdl_df is not None and not _script_hdl_df.empty:
-            print("Script mode: Creating plot...")
-            plot_to_export = create_hdl_plot(_script_hdl_df) # Use the data generated in script mode
+        if _script_hdl_df is not None and not _script_hdl_df.empty and \
+           'Observation_effectiveDateTime' in _script_hdl_df.columns and \
+           'Observation_valueQuantity_value' in _script_hdl_df.columns:
             
-            # Ensure output directory exists if path is complex, for simplicity assume current dir
+            print("Script mode: Creating plot with Matplotlib...")
+            plt.figure(figsize=(10, 6)) # Similar size to Bokeh's width=800, height=350
+            plt.plot(_script_hdl_df['Observation_effectiveDateTime'], _script_hdl_df['Observation_valueQuantity_value'], marker='o', linestyle='-')
+            
+            plt.title('HDL Cholesterol Over Time (Matplotlib)')
+            plt.xlabel('Date')
+            plt.ylabel('HDL (mg/dL)')
+            
+            # Format x-axis for dates
+            ax = plt.gca()
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            plt.xticks(rotation=45) # Rotate labels for better readability
+            
+            plt.grid(True)
+            plt.tight_layout() # Adjust layout to prevent labels from being cut off
+            
             output_path = args.output_image
-            
             try:
-                print(f"Script mode: Exporting plot to {output_path}...")
-                # For export_png to work, a browser driver (like geckodriver for Firefox or chromedriver for Chrome)
-                # and selenium must be installed and correctly configured in the PATH.
-                export_png(plot_to_export, filename=output_path)
+                print(f"Script mode: Saving Matplotlib plot to {output_path}...")
+                plt.savefig(output_path)
                 print(f"Plot successfully saved to {output_path}")
             except Exception as e:
-                print(f"Error exporting plot: {e}")
-                print("Please ensure you have a browser driver (geckodriver or chromedriver) in your PATH,")
-                print("and the necessary Python packages like 'selenium' and 'pillow' are installed.")
+                print(f"Error saving Matplotlib plot: {e}")
+            plt.close() # Close the figure to free memory
         else:
-            print("Script mode: No HDL data generated or processed. Cannot export plot.")
+            print("Script mode: No valid HDL data to plot with Matplotlib. Check DataFrame columns: 'Observation_effectiveDateTime', 'Observation_valueQuantity_value'.")
     else:
         # This message is for when the script is run with `python your_script.py` WITHOUT arguments
         # It won't show in Marimo interactive mode.
         print("Script mode: To save plot, run with --output-image <filename.png>")
 
 # Make plot_figure the last expression in the cell for Marimo to display it.
-# This is for interactive mode.
-plot_figure
+if mo.get_context().execution_mode == "notebook":
+    plot_figure # Display the plot in Marimo interactive mode
 ```

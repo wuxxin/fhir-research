@@ -25,9 +25,8 @@ dependencies = [
     "fhir.resources>=6.4.0", 
     "bokeh",
     "marimo",
-    "jupyterlab",
-    "selenium",
-    "pillow"
+    "pillow",
+    "matplotlib"
 ]
 
 [project.optional-dependencies]
