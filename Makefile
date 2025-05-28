@@ -40,8 +40,9 @@ lint: .venv/bin/activate
 
 clean:
 	@echo "+++ $@"
-	@rm -rf .venv
+	@rm -rf .venv __marimo__ .pytest_cache
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@rm uv.lock hdl-matplotlib.png || true
+	@for i in uv.lock hdl-matplotlib.png; do if test -e "$$i"; then rm "$$i"; fi; done
+
 
 

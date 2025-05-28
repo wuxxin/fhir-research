@@ -4,8 +4,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-# disable automatic module finding
-# py-modules = ["__main__"]
+# empty
 
 [tool.setuptools_scm]
 # empty

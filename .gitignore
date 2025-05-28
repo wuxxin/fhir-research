@@ -5,7 +5,7 @@ __marimo__
 .pytest_cache
 
 # egg-info for now
-mds.egg-info
+src/fhir_research.egg-info
 
 # uv locked dependencies
 uv.lock
