@@ -22,8 +22,6 @@ def cleanup_files():
 
     if TEST_OUTPUT_IMAGE.exists():
         os.remove(TEST_OUTPUT_IMAGE)
-    if temp_script_path_to_clean and Path(temp_script_path_to_clean).exists():
-        os.remove(temp_script_path_to_clean)
 
 
 def test_marimo_script_generates_image(cleanup_files):
@@ -48,8 +46,7 @@ def test_marimo_script_generates_image(cleanup_files):
         venv_marimo_executable,
         "convert",
         notebook_md_path_str,
-        "--to", "script",
-        "--output", str(temp_script_py)
+        "-o", str(temp_script_py)
     ]
     
     print(f"Running convert command: {' '.join(convert_command)}")

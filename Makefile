@@ -2,45 +2,37 @@
 
 .PHONY: help install test clean
 
-# Default Python interpreter to use for creating the virtual environment (uv might not need this explicitly)
-# PYTHON ?= python3 
-# Name of the virtual environment directory
-VENV_DIR ?= .venv
-
 help:
 	@echo "Available targets:"
-	@echo "  install    - Create virtual environment using uv and install dependencies from uv.lock"
+	@echo "  install    - Create virtual environment using uv and install dependencies"
 	@echo "  test       - Run tests using pytest"
 	@echo "  clean      - Remove the virtual environment and __pycache__ directories"
 
 ensure-uv:
+	@echo "+++ $@"
 	@if ! command -v uv > /dev/null; then \
 		echo "uv not found, installing with sudo pip install uv..."; \
 		sudo pip install uv; \
 	fi
 
-# Target to create virtual environment and install dependencies
-# Assumes uv.lock is present and managed
-install: ensure-uv $(VENV_DIR)/pyvenv.cfg
+uv.lock: pyproject.toml ensure-uv
+	@echo "+++ $@"
+	@uv lock
 
-$(VENV_DIR)/pyvenv.cfg: pyproject.toml uv.lock
-	@echo "Creating virtual environment in $(VENV_DIR) using uv..."
-	@uv venv $(VENV_DIR)
-	@echo "Installing dependencies from uv.lock using uv..."
-	# Let's use the same uv for sync.
-	@uv pip sync --python $(VENV_DIR)/bin/python uv.lock
-	@echo "Installation complete. Activate with: source $(VENV_DIR)/bin/activate"
-	@# Touch a file inside the venv to signify completion for make, pyvenv.cfg is standard.
-	@# No, pyvenv.cfg is created by 'uv venv'. The rule depends on it.
+.venv/bin/activate: uv.lock
+	@echo "+++ $@"
+	@uv venv
+	@uv sync --all-extras
 
-# Target to run tests
-test: $(VENV_DIR)/pyvenv.cfg
-	@echo "Running tests..."
-	@$(VENV_DIR)/bin/pytest tests/
+install: .venv/bin/activate
+	@echo "+++ $@"
 
-# Target to clean up
+test: .venv/bin/activate
+	@echo "+++ $@"
+	@.venv/bin/pytest tests/
+
 clean:
-	@echo "Cleaning up..."
-	@rm -rf $(VENV_DIR)
+	@echo "+++ $@"
+	@rm -rf .venv
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@echo "Clean up complete."
+
