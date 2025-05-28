@@ -1,10 +1,15 @@
-# Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT** for coding agent fitness, **NO CODE** has been reviewed for any purpose
+# Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT** for coding agent fitness,
+  **NO CODE** has been reviewed for any purpose
 
 ## Python Medical Data Science Project
 
-This project demonstrates the use of Python for handling and visualizing medical data, specifically focusing on FHIR resources, pandas for data analysis, and Bokeh and matplotlib for visualization.
+This project demonstrates the use of Python for handling and visualizing medical data,
+specifically focusing on FHIR resources, 
+pandas for data analysis, and Bokeh and matplotlib for visualization.
 
-It includes utilities for creating example FHIR Patient and Observation (HDL Cholesterol) data, flattening FHIR bundles for analysis, and example notebooks in Marimo for visualization.
+It includes utilities for creating example FHIR Patient and Observation 
+(HDL Cholesterol) data, flattening FHIR bundles for analysis,
+and example notebooks in Marimo for visualization.
 
 ## Setup
 
@@ -56,7 +61,7 @@ make lint
 
 - [x] install dependencies: run `make buildenv` ,
 - [x] run tests: run `make test`
-- [x] review errors, fix errors
-- [x] rerun tests
+- [x] review errors, fix errors and warnings if reasonable
+- [x] rerun tests, if something get stuck, call make clean, then proceed
 - [x] update README.md
 
