@@ -28,16 +28,16 @@ uv.lock: pyproject.toml ensure-uv
 buildenv: .venv/bin/activate
 	@echo "+++ $@"
 
-test: .venv/bin/activate
+test: buildenv
 	@echo "+++ $@"
 	@mkdir -p build
 	@uv run scripts/generate_fhir_example.py
 	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
 
-lint: .venv/bin/activate
+lint: buildenv
 	@echo "+++ $@"
-	@flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	@flake8 . --count --exit-zero --max-complexity=10 --max-line-length=95 --statistics
+	@flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
+	@flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=95 --statistics
 
 clean:
 	@echo "+++ $@"
