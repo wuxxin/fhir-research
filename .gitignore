@@ -1,0 +1,15 @@
+# compiled python
+*.pyc
+__pycache__
+
+# egg-info for now
+*.egg-info
+
+# uv locked dependencies
+uv.lock
+
+# python virtualenv
+.venv
+
+# build artifacts
+build
