@@ -14,7 +14,7 @@ venvPath = "."
 venv = ".venv"
 
 [project]
-name = "fihr-research"
+name = "fhir-research"
 version = "0.1.0"
 description = "A project for FHIR data handling, analysis, and visualization."
 readme = "README.md"

@@ -30,8 +30,9 @@ buildenv: .venv/bin/activate
 
 test: .venv/bin/activate
 	@echo "+++ $@"
+	@mkdir -p build
 	@uv run scripts/generate_fhir_example.py
-	@uv run notebooks/hdl_visualize.py -o hdl-matplotlib.png
+	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
 
 lint: .venv/bin/activate
 	@echo "+++ $@"
@@ -40,9 +41,6 @@ lint: .venv/bin/activate
 
 clean:
 	@echo "+++ $@"
-	@rm -rf .venv __marimo__ .pytest_cache
+	@rm -rf .venv __marimo__ .pytest_cache build
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@for i in uv.lock hdl-matplotlib.png; do if test -e "$$i"; then rm "$$i"; fi; done
-
-
-
+	@for i in uv.lock; do if test -e "$$i"; then rm "$$i"; fi; done
