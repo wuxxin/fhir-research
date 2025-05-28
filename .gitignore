@@ -1,6 +1,8 @@
 # compiled python
 *.pyc
 __pycache__
+__marimo__
+.pytest_cache
 
 # egg-info for now
 *.egg-info
