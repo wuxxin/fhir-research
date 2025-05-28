@@ -1,0 +1,10 @@
+fhir.resources>=6.4.0
+pandas
+bokeh
+pillow
+matplotlib
+marimo
+
+[test]
+pytest
+pyflakes

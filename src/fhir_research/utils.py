@@ -67,9 +67,9 @@ def create_patient(
     human_name.given = [given_name]
 
     # Add Meta to HumanName
-    hn_meta = Meta.construct()
-    hn_meta.profile = ["http://fhir.de/StructureDefinition/humanname-de-basis"]
-    human_name.meta = hn_meta
+    # hn_meta = Meta.construct()
+    # hn_meta.profile = ["http://fhir.de/StructureDefinition/humanname-de-basis"]
+    # human_name.meta = hn_meta # This line caused the error
     patient.name = [human_name]
 
     patient.gender = gender
@@ -118,8 +118,8 @@ def create_observation(
         fhir.resources.observation.Observation: The FHIR Observation resource object.
     """
     observation = Observation.construct()
+    observation.status = "final"  # Set status before id
     observation.id = observation_id
-    observation.status = "final"
 
     # Category: Laboratory
     observation.category = [

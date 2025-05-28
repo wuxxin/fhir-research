@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: fihr-research
+Version: 0.1.0
+Summary: A project for FHIR data handling, analysis, and visualization.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fhir.resources>=6.4.0
+Requires-Dist: pandas
+Requires-Dist: bokeh
+Requires-Dist: pillow
+Requires-Dist: matplotlib
+Requires-Dist: marimo
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pyflakes; extra == "test"
+Dynamic: license-file
+
 # Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT** for coding agent fitness, **NO CODE** has been reviewed for any purpose
 
 ## Python Medical Data Science Project
@@ -52,11 +70,11 @@ make lint
 
 ## todo
 
-### make all test pass - [COMPLETED]
+### make all test pass
 
-- [x] install dependencies: run `make buildenv` ,
-- [x] run tests: run `make test`
-- [x] review errors, fix errors
-- [x] rerun tests
-- [x] update README.md
+- install dependencies: run `make buildenv` ,
+- run tests: run `make test`
+- review errors, fix errors
+- rerun tests
+- update README.md
 

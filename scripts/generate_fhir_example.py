@@ -85,15 +85,18 @@ def main():
     print("FHIR Bundle generated.\n")
 
     # 4. Print the FHIR Bundle
-    bundle_json = fhir_bundle.as_json()  # fhir.resources model has as_json()
+    # Use model_dump_json for direct serialization that handles datetime
+    bundle_json_str = fhir_bundle.model_dump_json(indent=2) 
     print("--- Generated FHIR Bundle (JSON) ---")
-    print(json.dumps(bundle_json, indent=2))
+    print(bundle_json_str)
     print("--- End of FHIR Bundle ---\n")
 
     # 5. Flatten Bundle to DataFrame
+    # For flatten_fhir_bundle, we still need the dictionary.
+    # model_dump() is used here as flatten_fhir_bundle expects a dict.
     print("Flattening FHIR Bundle to DataFrame...")
-    # The flatten_fhir_bundle function expects a dictionary
-    flattened_df = flatten_fhir_bundle(bundle_json)
+    bundle_dict_for_flattening = fhir_bundle.model_dump()
+    flattened_df = flatten_fhir_bundle(bundle_dict_for_flattening)
     print("DataFrame generated.\n")
 
     # 6. Print the DataFrame
