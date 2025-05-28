@@ -14,14 +14,14 @@ make buildenv
 ### Marimo Notebook
 
 ```bash
-marimo edit notebooks/hdl_visualization.md
+uv run marimo edit notebooks/hdl_visualization.md
 ```
 
 (Or `marimo run notebooks/hdl_visualization.md` for run-only mode).
 
 To export the plot from this notebook as an image, you can run it as a script:
 ```bash
-python notebooks/hdl_visualization.md --output-image hdl_plot.png
+uv run python notebooks/hdl_visualization.md --output-image hdl_plot.png
 ```
 
 ## Testing
