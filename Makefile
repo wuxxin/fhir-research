@@ -30,7 +30,8 @@ buildenv: .venv/bin/activate
 
 test: .venv/bin/activate
 	@echo "+++ $@"
-	@.venv/bin/pytest tests/
+	@uv run scripts/generate_fhir_example.py
+	@uv run notebooks/hdl_visualize.py -o hdl-matplotlib.png
 
 lint: .venv/bin/activate
 	@echo "+++ $@"
@@ -41,6 +42,6 @@ clean:
 	@echo "+++ $@"
 	@rm -rf .venv
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@rm uv.lock
+	@rm uv.lock hdl-matplotlib.png || true
 
 

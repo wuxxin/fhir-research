@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 # disable automatic module finding
-py-modules = ["__main__"]
+# py-modules = ["__main__"]
 
 [tool.setuptools_scm]
 # empty
@@ -15,7 +15,7 @@ venvPath = "."
 venv = ".venv"
 
 [project]
-name = "mds"
+name = "fihr-research"
 version = "0.1.0"
 description = "A project for FHIR data handling, analysis, and visualization."
 readme = "README.md"
