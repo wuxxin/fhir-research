@@ -41,4 +41,6 @@ clean:
 	@echo "+++ $@"
 	@rm -rf .venv
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@rm uv.lock
+
 
