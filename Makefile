@@ -36,8 +36,8 @@ test: buildenv
 
 lint: buildenv
 	@echo "+++ $@"
-	@flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
-	@flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=95 --statistics
+	@uv run flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
+	@uv run flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=95 --statistics
 
 clean:
 	@echo "+++ $@"
