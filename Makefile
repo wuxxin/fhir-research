@@ -13,9 +13,15 @@ help:
 	@echo "  test       - Run tests using pytest"
 	@echo "  clean      - Remove the virtual environment and __pycache__ directories"
 
+ensure-uv:
+	@if ! command -v uv > /dev/null; then \
+		echo "uv not found, installing with sudo pip install uv..."; \
+		sudo pip install uv; \
+	fi
+
 # Target to create virtual environment and install dependencies
 # Assumes uv.lock is present and managed
-install: $(VENV_DIR)/pyvenv.cfg
+install: ensure-uv $(VENV_DIR)/pyvenv.cfg
 
 $(VENV_DIR)/pyvenv.cfg: pyproject.toml uv.lock
 	@echo "Creating virtual environment in $(VENV_DIR) using uv..."
