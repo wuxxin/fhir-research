@@ -1,5 +1,5 @@
-# Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT** for coding agent fitness,
-  **NO CODE** has been reviewed for any purpose
+# Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT**
+## **NO CODE** has been reviewed for ANY purpose
 
 ## Python Medical Data Science Project
 
