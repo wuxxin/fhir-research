@@ -23,6 +23,7 @@ dependencies = [
     "fhir.resources>=6.4.0",
     "pandas",
     "bokeh",
+    "altair",
     "pillow",
     "matplotlib",
     "marimo",

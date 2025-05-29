@@ -3,15 +3,14 @@ FHIR Utilities Module
 ---------------------
 
 This module provides functions to create and process FHIR resources,
-specifically for generating patient data, lab observations, and bundling them.
-It also includes a utility to flatten FHIR bundles into pandas DataFrames.
+It also includes a utility to flatten FHIR bundles into pandas DataFrames and filter these DataFrames
 
-Core Functions:
-    create_patient: Creates a FHIR Patient resource.
-    create_observation: Creates a FHIR Observation resource for lab results.
-    create_patient_lab_bundle: Creates a FHIR Bundle with a Patient and their
-                               lab Observation resources.
-    flatten_fhir_bundle: Flattens a FHIR Bundle dictionary into a pandas DataFrame.
+create_patient:             Creates  a FHIR Patient resource
+create_observation:         Creates  a FHIR Observation resource for lab results
+create_patient_lab_bundle:  Creates  a FHIR Bundle with a Patient and their lab Observations
+flatten_fhir_bundle:        Flattens a FHIR Bundle dictionary into a pandas DataFrame
+filter_fhir_dataframe:      Filter   a FHIR DataFrame on Column <name> for value <value>
+
 """
 
 import datetime
@@ -403,3 +402,34 @@ def flatten_fhir_bundle(bundle_dict: dict) -> pd.DataFrame:
         # This cleanup needs to be more robust based on actual column names post-merge
 
     return merged_df.reset_index(drop=True)
+
+
+def filter_fhir_dataframe(df_full: pd.DataFrame, name="", value="") -> pd.DataFrame:
+    # Prepare Subset DataFrame
+    df_subset = pd.DataFrame()
+    if df_full is not None and not df_full.empty:
+        if not name:
+            df_subset = df_full.copy()
+        else:
+            if name in df_full.columns:
+                df_subset = df_full[df_full[name] == value].copy()
+                if not df_subset.empty:
+                    date_col = next(
+                        (col for col in df_subset.columns if "effectiveDateTime" in col),
+                        None,
+                    )
+                    value_col = next(
+                        (col for col in df_subset.columns if "valueQuantity_value" in col),
+                        None,
+                    )
+
+                    if date_col:
+                        df_subset[date_col] = pd.to_datetime(df_subset[date_col])
+                    if value_col:
+                        df_subset[value_col] = pd.to_numeric(df_subset[value_col])
+            else:
+                print(f"Warning: column_name '{name}' not found. Cannot filter.")
+    else:
+        print("Warning: Initial DataFrame is empty or None. Cannot filter")
+
+    return df_subset
