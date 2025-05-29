@@ -4,10 +4,10 @@
 ## Python Medical Data Science Project
 
 This project demonstrates the use of Python for handling and visualizing medical data,
-specifically focusing on FHIR resources, 
+specifically focusing on FHIR resources,
 pandas for data analysis, and Bokeh and matplotlib for visualization.
 
-It includes utilities for creating example FHIR Patient and Observation 
+It includes utilities for creating example FHIR Patient and Observation
 (HDL Cholesterol) data, flattening FHIR bundles for analysis,
 and example notebooks in Marimo for visualization.
 
@@ -28,8 +28,10 @@ uv run marimo edit notebooks/hdl_visualize.py
 To export the plot from this notebook as an image, you can run it as a script:
 
 ```bash
-uv run python notebooks/hdl_visualize.md --output-image hdl_plot.png
+uv run python notebooks/hdl_visualize.py -o hdl-matplotlib.png
 ```
+
+![HDL-Plot](examples/hdl-matplotlib.png)
 
 ## Testing and Linting
 
@@ -55,13 +57,4 @@ make lint
     * Code: LOINC `2085-9` ("Cholesterol in HDL [Mass/volume] in Serum or Plasma")
     * Units: `mg/dL` (UCUM code `mg/dL`)
 
-## todo
-
-### make all test pass - [COMPLETED]
-
-- [x] install dependencies: run `make buildenv` ,
-- [x] run tests: run `make test`
-- [x] review errors, fix errors and warnings if reasonable
-- [x] rerun tests, if something get stuck, call make clean, then proceed
-- [x] update README.md
 
