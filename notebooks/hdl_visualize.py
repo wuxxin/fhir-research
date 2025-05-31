@@ -40,6 +40,11 @@ def _(mo):
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
 
+    def list_all_files(base_dir):
+        for root, _, files in os.walk(base_dir):
+            for file in files:
+                yield os.path.join(root, file)
+
     try:
         from fhir_research.utils import (
             flatten_fhir_bundle,
@@ -50,28 +55,13 @@ def _(mo):
     except ModuleNotFoundError:
         print("Standard import failed. Attempting WASM public folder import...")
         notebook_dir = mo.notebook_location()
+        current_dir = os.getcwd()
+        print(f"Notebook_dir: {notebook_dir}")
+        print(f"current_dir: {current_dir}")
+        for file_path in list_all_files(current_dir):
+            print(file_path)
 
-        public_fhir_path = ""
-        if notebook_dir is None:
-            current_dir = os.getcwd()
-            public_folder_in_wasm_root = os.path.join(current_dir, "public")
-            if os.path.exists(
-                os.path.join(public_folder_in_wasm_root, "fhir_research", "__init__.py")
-            ):
-                public_fhir_path = public_folder_in_wasm_root
-                print(
-                    f"Warning: mo.notebook_location() is None. Using effective path for public folder: {public_fhir_path}"
-                )
-            else:
-                print(
-                    f"Error: mo.notebook_location() is None and could not determine public path from CWD: {current_dir}"
-                )
-                raise
-        else:
-            public_fhir_path = os.path.abspath(os.path.join(notebook_dir, "public"))
-
-        print(f"Constructed base path for 'public' directory: {public_fhir_path}")
-
+        public_fhir_path = os.path.join(current_dir, "public")
         prospective_path_to_lib_parent = public_fhir_path
         prospective_lib_dir = os.path.join(public_fhir_path, "fhir_research")
 
