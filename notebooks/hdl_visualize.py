@@ -58,7 +58,7 @@ def _(mo):
         current_dir = os.getcwd()
         print(f"Notebook_dir: {notebook_dir}")
         print(f"current_dir: {current_dir}")
-        with open(os.path.join(current_dir, "test.py")) as f:
+        with open(os.path.join(current_dir, "test.py"), "w") as f:
             f.write("import os\n")
         for file_path in list_all_files(current_dir):
             print(file_path)
