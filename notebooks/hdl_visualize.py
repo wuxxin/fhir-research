@@ -1,13 +1,12 @@
 import marimo
 
-__generated_with = "0.13.14"
+__generated_with = "0.13.15"
 app = marimo.App(width="medium")
 
 
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
@@ -40,10 +39,21 @@ def _(mo):
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
 
+
     def list_all_files(base_dir):
         for root, _, files in os.walk(base_dir):
             for file in files:
                 yield os.path.join(root, file)
+
+
+    notebook_dir = mo.notebook_location()
+    current_dir = os.getcwd()
+    print(f"Notebook_dir: {notebook_dir}")
+    print(f"current_dir: {current_dir}")
+    with open(os.path.join(current_dir, "test.py"), "w") as f:
+        f.write("import os\n")
+    for file_path in list_all_files(current_dir):
+        print(file_path)
 
     try:
         from fhir_research.utils import (
@@ -54,14 +64,6 @@ def _(mo):
         from fhir_research.examples import fhir_bundle_marimo_max
     except ModuleNotFoundError:
         print("Standard import failed. Attempting WASM public folder import...")
-        notebook_dir = mo.notebook_location()
-        current_dir = os.getcwd()
-        print(f"Notebook_dir: {notebook_dir}")
-        print(f"current_dir: {current_dir}")
-        with open(os.path.join(current_dir, "test.py"), "w") as f:
-            f.write("import os\n")
-        for file_path in list_all_files(current_dir):
-            print(file_path)
 
         public_fhir_path = os.path.join(current_dir, "public")
         prospective_path_to_lib_parent = public_fhir_path
@@ -93,7 +95,6 @@ def _(mo):
                 f"Error: Could not find 'fhir_research' in public folder. Looked for dir at: {prospective_lib_dir}. sys.path: {sys.path}"
             )
             raise
-
     return (
         DatetimeTickFormatter,
         argparse,
@@ -140,6 +141,7 @@ def _(df_full, df_subset, mo):
 @app.cell
 def _(DatetimeTickFormatter, df_subset, figure, pd):
     ## Plotting Functions
+
 
     def create_bokeh_plot(data_frame: pd.DataFrame):
         # Creates a Bokeh plot for HDL cholesterol over time.
@@ -190,6 +192,7 @@ def _(DatetimeTickFormatter, df_subset, figure, pd):
         p.legend.location = "top_left"
         return p
 
+
     create_bokeh_plot(df_subset)
     return
 
@@ -234,6 +237,7 @@ def _(df_subset, mdates, pd, plt):
         plt.tight_layout()
 
         return fig  # Always return the figure object
+
 
     create_matplotlib_plot(df_subset)
     return (create_matplotlib_plot,)
