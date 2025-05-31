@@ -24,3 +24,7 @@ jobs:
       run: make docs
     - name: Lint
       run: make lint
+    - name: Upload Pages Artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+          path: build
