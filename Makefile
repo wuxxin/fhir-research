@@ -1,14 +1,8 @@
 # Makefile for managing the Python project with uv
 
-.PHONY: help install test clean
-
+.PHONY: help buildenv test docs lint clean
 help:
-	@echo "Available targets:"
-	@echo "  buildenv   - Create build environment"
-	@echo "  test       - Run Tests"
-	@echo "  docs       - Make Documentation and Onlinepage"
-	@echo "  lint       - Run Linting"
-	@echo "  clean      - Remove test and build artifacts"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort
 
 ensure-uv:
 	@echo "+++ $@"
@@ -26,29 +20,29 @@ uv.lock: pyproject.toml ensure-uv
 	@uv venv
 	@uv sync --all-extras
 
-buildenv: .venv/bin/activate
+buildenv: .venv/bin/activate ## Create build environment
 	@echo "+++ $@"
 
-test: buildenv
+test: buildenv ## Run Tests
 	@echo "+++ $@"
 	@mkdir -p build
 	@uv run scripts/generate_fhir_example.py
 
-docs: buildenv
+docs: buildenv ## Make Documentation and Onlinepage
 	@echo "+++ $@"
 	@mkdir -p build
 	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
 	@uv run mkdocs build -f mkdocs.yml
 	@printf "n\n" | uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
-lint: buildenv
+lint: buildenv ## Run Linting
 	@echo "+++ $@"
 	@uv run flake8 . --exclude .git,__pycache__,build,.venv \
 		--select=E9,F63,F7,F82 --show-source --statistics
 	@uv run flake8 . --exclude .git,__pycache__,build,.venv \
 		--count --exit-zero --max-complexity=10 --max-line-length=95 --statistics --output-file build/flake8.txt
 
-clean:
+clean: ## Remove test and build artifacts
 	@echo "+++ $@"
 	@rm -rf .venv __marimo__ .pytest_cache build
 	@find . -type d -name "__pycache__" -exec rm -rf {} +

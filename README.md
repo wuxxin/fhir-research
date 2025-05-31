@@ -5,16 +5,14 @@
 ## Python Medical Data Science Project
 
 This project demonstrates the use of Python for handling and visualizing medical data,
-specifically focusing on FHIR resources,
-pandas for data analysis, and Bokeh and matplotlib for visualization.
+specifically focusing on FHIR resources, pandas for data analysis, Bokeh and matplotlib for visualization.
 
-It includes utilities for creating example FHIR Patient and Observation
-(Cholesterol) data, flattening FHIR bundles for analysis,
-and example notebooks in Marimo for visualization.
+It includes utilities for creating example FHIR Patient and FHIR Observation data,
+flattening FHIR bundles for analysis and example notebooks in Marimo for visualization.
 
 ## Interactive Visualization
 
-You can explore the cholesterol visualization interactively:
+You can explore the visualization interactively:
 
 - **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/](https://wuxxin.github.io/fhir-research/)
 - **Run locally with Marimo:**
