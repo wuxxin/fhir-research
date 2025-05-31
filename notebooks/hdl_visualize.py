@@ -7,6 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -25,11 +26,12 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(mo):
     import pandas as pd
     import json
     import argparse
     import os
+    import sys
 
     from datetime import datetime, timedelta, date
 
@@ -38,12 +40,68 @@ def _():
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
 
-    from fhir_research.utils import (
-        create_patient_lab_bundle,
-        flatten_fhir_bundle,
-        filter_fhir_dataframe,
-    )
-    from fhir_research.examples import fhir_bundle_marimo_max
+    try:
+        from fhir_research.utils import (
+            flatten_fhir_bundle,
+            filter_fhir_dataframe,
+            create_patient_lab_bundle,
+        )
+        from fhir_research.examples import fhir_bundle_marimo_max
+    except ModuleNotFoundError:
+        print("Standard import failed. Attempting WASM public folder import...")
+        notebook_dir = mo.notebook_location()
+
+        public_fhir_path = ""
+        if notebook_dir is None:
+            current_dir = os.getcwd()
+            public_folder_in_wasm_root = os.path.join(current_dir, "public")
+            if os.path.exists(
+                os.path.join(public_folder_in_wasm_root, "fhir_research", "__init__.py")
+            ):
+                public_fhir_path = public_folder_in_wasm_root
+                print(
+                    f"Warning: mo.notebook_location() is None. Using effective path for public folder: {public_fhir_path}"
+                )
+            else:
+                print(
+                    f"Error: mo.notebook_location() is None and could not determine public path from CWD: {current_dir}"
+                )
+                raise
+        else:
+            public_fhir_path = os.path.abspath(os.path.join(notebook_dir, "public"))
+
+        print(f"Constructed base path for 'public' directory: {public_fhir_path}")
+
+        prospective_path_to_lib_parent = public_fhir_path
+        prospective_lib_dir = os.path.join(public_fhir_path, "fhir_research")
+
+        if os.path.isdir(prospective_lib_dir) and os.path.exists(
+            os.path.join(prospective_lib_dir, "__init__.py")
+        ):
+            print(f"Found 'fhir_research' directory at: {prospective_lib_dir}")
+            if prospective_path_to_lib_parent not in sys.path:
+                sys.path.insert(0, prospective_path_to_lib_parent)
+                print(f"Added to sys.path: {prospective_path_to_lib_parent}")
+            else:
+                print(f"Path already in sys.path: {prospective_path_to_lib_parent}")
+
+            # Retry import
+            from fhir_research.utils import (
+                flatten_fhir_bundle,
+                filter_fhir_dataframe,
+                create_patient_lab_bundle,
+            )
+            from fhir_research.examples import fhir_bundle_marimo_max
+
+            print(
+                "Successfully imported fhir_research from public folder after adding to sys.path."
+            )
+        else:
+            print(
+                f"Error: Could not find 'fhir_research' in public folder. Looked for dir at: {prospective_lib_dir}. sys.path: {sys.path}"
+            )
+            raise
+
     return (
         DatetimeTickFormatter,
         argparse,
@@ -90,7 +148,6 @@ def _(df_full, df_subset, mo):
 @app.cell
 def _(DatetimeTickFormatter, df_subset, figure, pd):
     ## Plotting Functions
-
 
     def create_bokeh_plot(data_frame: pd.DataFrame):
         # Creates a Bokeh plot for HDL cholesterol over time.
@@ -141,7 +198,6 @@ def _(DatetimeTickFormatter, df_subset, figure, pd):
         p.legend.location = "top_left"
         return p
 
-
     create_bokeh_plot(df_subset)
     return
 
@@ -186,7 +242,6 @@ def _(df_subset, mdates, pd, plt):
         plt.tight_layout()
 
         return fig  # Always return the figure object
-
 
     create_matplotlib_plot(df_subset)
     return (create_matplotlib_plot,)

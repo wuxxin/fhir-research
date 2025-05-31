@@ -31,10 +31,12 @@ test: buildenv ## Run Tests
 
 docs: buildenv ## Make Documentation and Onlinepage
 	@echo "+++ $@"
-	@mkdir -p build/test build/site
+	@mkdir -p build/test build/site build/notebooks/public/
 	@uv run notebooks/hdl_visualize.py -o build/test/hdl-matplotlib.png
 	@uv run mkdocs build -f mkdocs.yml
-	@printf "n\n" | uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
+	@cp -r src/fhir_research build/notebooks/public/fhir_research
+	@cp notebooks/hdl_visualize.py build/notebooks/
+	@printf "n\n" | uv run marimo export html-wasm build/notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
 lint: buildenv ## Run Linting
 	@echo "+++ $@"
