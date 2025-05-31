@@ -59,6 +59,9 @@ docs = [
     # Open source plugin for Mkdocs page redirects
     "mkdocs-redirects",
 
+    # embed interactive marimo notebooks in your MkDocs documentation
+    "mkdocs-marimo",
+
     # Material design theme for MkDocs
     "mkdocs-material",
 

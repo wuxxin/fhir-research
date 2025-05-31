@@ -7,7 +7,9 @@ nav:
   - README.md
   - fhir-profiles.md
   - Interactive **Marimo**: marimo
-
+  - Embedded Examples: examples.md
+plugins:
+  - marimo
 markdown_extensions:
   - smarty
   - toc:
