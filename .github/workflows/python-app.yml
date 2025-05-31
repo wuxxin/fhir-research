@@ -24,10 +24,16 @@ jobs:
       run: make docs
     - name: Lint
       run: make lint
-    - name: Upload Pages Artifact
-      uses: actions/upload-pages-artifact@v3
+    - name: upload test artifact
+      uses: actions/upload-artifact@v4
       with:
-          path: build
+        name: test-artifact
+        path: build/test
+    - name: Upload github pages artifact
+      uses: actions/upload-pages-artifact@v3
+      id: pages-deployment
+      with:
+        path: site
 
   deploy:
     needs: build
@@ -38,5 +44,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        with:
-          directory: build/site
+        id: pages-deployment
