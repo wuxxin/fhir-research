@@ -15,6 +15,7 @@ flattening FHIR bundles for analysis and example notebooks in Marimo for visuali
 You can explore the visualization interactively:
 
 - **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/](https://wuxxin.github.io/fhir-research/)
+    - **Run Interactive Marimo in the Browser:** [https://wuxxin.github.io/fhir-research/marimo/](https://wuxxin.github.io/fhir-research/marimo/)
 - **Run locally with Marimo:**
 
 ```sh
