@@ -20,5 +20,7 @@ jobs:
       run: make buildenv
     - name: Test
       run: make test
+    - name: Docs
+      run: make docs
     - name: Lint
       run: make lint

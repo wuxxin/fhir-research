@@ -39,12 +39,14 @@ docs: buildenv
 	@mkdir -p build
 	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
 	@uv run mkdocs build -f mkdocs.yml
-	@uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
+	@printf "n\n" | uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
 lint: buildenv
 	@echo "+++ $@"
-	@uv run flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
-	@uv run flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=95 --statistics
+	@uv run flake8 . --exclude .git,__pycache__,build,.venv \
+		--select=E9,F63,F7,F82 --show-source --statistics
+	@uv run flake8 . --exclude .git,__pycache__,build,.venv \
+		--count --exit-zero --max-complexity=10 --max-line-length=95 --statistics --output-file build/flake8.txt
 
 clean:
 	@echo "+++ $@"
