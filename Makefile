@@ -19,6 +19,7 @@ uv.lock: pyproject.toml ensure-uv
 	@echo "+++ $@"
 	@uv venv
 	@uv sync --all-extras
+	@uv pip install -e "."
 
 buildenv: .venv/bin/activate ## Create build environment
 	@echo "+++ $@"
