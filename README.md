@@ -16,7 +16,7 @@ and example notebooks in Marimo for visualization.
 
 You can explore the HDL cholesterol visualization interactively:
 
-- **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/](https://wuxxin.github.io/fhir-research/)
+- **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/marimo/](https://wuxxin.github.io/fhir-research/marimo/)
 - **Run locally with Marimo:**
   ```bash
   uv run marimo edit notebooks/hdl_visualize.py
