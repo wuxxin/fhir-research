@@ -6,6 +6,7 @@ help:
 	@echo "Available targets:"
 	@echo "  buildenv   - Create build environment"
 	@echo "  test       - Run Tests"
+	@echo "  docs       - Make Documentation and Onlinepage"
 	@echo "  lint       - Run Linting"
 	@echo "  clean      - Remove test and build artifacts"
 
@@ -32,7 +33,13 @@ test: buildenv
 	@echo "+++ $@"
 	@mkdir -p build
 	@uv run scripts/generate_fhir_example.py
+
+docs: buildenv
+	@echo "+++ $@"
+	@mkdir -p build
 	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
+	@uv run mkdocs build -f mkdocs.yml
+	@uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
 lint: buildenv
 	@echo "+++ $@"

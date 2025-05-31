@@ -80,7 +80,7 @@ def create_patient(
     return patient
 
 
-def create_observation(
+def create_lab_observation(
     observation_id: str,
     patient_reference_str: str,
     effective_date_time: str,  # ISO 8601 format string
@@ -241,7 +241,7 @@ def create_patient_lab_bundle(patient_details: dict, lab_observations_details: l
     # Create Observation Resources
     for obs_detail in lab_observations_details:
         # Ensure patient_reference_str is passed correctly
-        observation_resource = create_observation(
+        observation_resource = create_lab_observation(
             patient_reference_str=patient_reference_str, **obs_detail
         )
         obs_entry = BundleEntry.construct()

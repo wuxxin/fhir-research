@@ -1,5 +1,6 @@
 # Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT**
-## **NO CODE** has been reviewed for ANY purpose
+
+**NO CODE** has been reviewed for **ANY** purpose!
 
 ## Python Medical Data Science Project
 
@@ -8,7 +9,7 @@ specifically focusing on FHIR resources,
 pandas for data analysis, and Bokeh and matplotlib for visualization.
 
 It includes utilities for creating example FHIR Patient and Observation
-(HDL Cholesterol) data, flattening FHIR bundles for analysis,
+(Cholesterol) data, flattening FHIR bundles for analysis,
 and example notebooks in Marimo for visualization.
 
 ## Setup
@@ -17,21 +18,30 @@ and example notebooks in Marimo for visualization.
 make buildenv
 ```
 
-## Running the Code
+## Running
 
-### Marimo Notebook
+### Interactivly edit the Notebook in Marimo
 
 ```bash
 uv run marimo edit notebooks/hdl_visualize.py
 ```
 
-To export the plot from this notebook as an image, you can run it as a script:
+### Export the matplotlib plot as image
 
 ```bash
 uv run python notebooks/hdl_visualize.py -o hdl-matplotlib.png
 ```
 
-![HDL-Plot](examples/hdl-matplotlib.png)
+![HDL-Plot](hdl-matplotlib.png)
+
+## Docs
+
+```bash
+make docs
+```
+
+
+[Explore Interactive Marimo in Browser](marimo/index.html)
 
 ## Testing and Linting
 
@@ -57,4 +67,6 @@ make lint
     * Code: LOINC `2085-9` ("Cholesterol in HDL [Mass/volume] in Serum or Plasma")
     * Units: `mg/dL` (UCUM code `mg/dL`)
 
+### TODO
 
+* research and add

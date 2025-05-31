@@ -26,11 +26,42 @@ dependencies = [
     "altair",
     "pillow",
     "matplotlib",
-    "marimo",
+    "marimo[recommended]",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
     "flake8"
+]
+docs = [
+    # mkdocs - Project documentation with Markdown
+    "mkdocs",
+
+    # A Mermaid graphs plugin for MkDocs
+    "mkdocs-mermaid2-plugin",
+
+    # Python implementation of Lunr.js (for mkdocs)
+    "lunr",
+
+    # MkDocs plugin to add a last updated date to your site
+    "mkdocs-git-revision-date-localized-plugin",
+
+    # Plugin to generate a single PDF file from a MkDocs
+    "mkdocs-with-pdf",
+
+    # MkDocs plugin to automagically generate relative links
+    "mkdocs-ezlinks-plugin",
+
+    # Open source plugin for Mkdocs page redirects
+    "mkdocs-redirects",
+
+    # Material design theme for MkDocs
+    "mkdocs-material",
+
+    # Markdown extension resources for MkDocs Material
+    "mkdocs-material-extensions",
+
+    # MkDocs Material additions used for pymdownx
+    "mkdocs_pymdownx_material_extras",
 ]
