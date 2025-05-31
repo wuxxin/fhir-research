@@ -33,7 +33,7 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       id: pages-deployment
       with:
-        path: site
+        path: build/site
 
   deploy:
     needs: build
