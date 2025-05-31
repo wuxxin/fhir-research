@@ -6,6 +6,7 @@ theme:
 nav:
   - README.md
   - fhir-profiles.md
+  - Interactive Visualization: marimo
 
 markdown_extensions:
   - smarty

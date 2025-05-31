@@ -39,8 +39,6 @@ docs: buildenv
 	@mkdir -p build
 	@uv run notebooks/hdl_visualize.py -o build/hdl-matplotlib.png
 	@uv run mkdocs build -f mkdocs.yml
-	@mkdir -p build/site/marimo
-	@cp -r src/fhir_research build/site/marimo/
 	@printf "n\n" | uv run marimo export html-wasm notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
 lint: buildenv

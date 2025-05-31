@@ -1,6 +1,6 @@
-# Jules Lab Experiment , **THIS-IS-AN-EXPERIMENT**
+# Jules Lab Experiment
 
-**NO CODE** has been reviewed for **ANY** purpose!
+**THIS-IS-AN-EXPERIMENT**, **NO CODE** has been reviewed for **ANY** purpose!
 
 ## Python Medical Data Science Project
 
@@ -14,13 +14,14 @@ and example notebooks in Marimo for visualization.
 
 ## Interactive Visualization
 
-You can explore the HDL cholesterol visualization interactively:
+You can explore the cholesterol visualization interactively:
 
-- **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/marimo/](https://wuxxin.github.io/fhir-research/marimo/)
+- **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/](https://wuxxin.github.io/fhir-research/)
 - **Run locally with Marimo:**
-  ```bash
-  uv run marimo edit notebooks/hdl_visualize.py
-  ```
+
+```sh
+uv run marimo edit notebooks/hdl_visualize.py
+```
 
 ## Setup
 
@@ -63,17 +64,3 @@ make test
 ```bash
 make lint
 ```
-
-## FHIR Profiles
-
-* **Patient Data**: Uses the core FHIR Patient resource.
-    *`Patient.name` conforms to `http://fhir.de/StructureDefinition/humanname-de-basis`.
-    *`Patient.address` conforms to `http://fhir.de/StructureDefinition/address-de-basis`.
-* **HDL Cholesterol Observation**: Uses the core FHIR Observation resource.
-    * Category: `laboratory`
-    * Code: LOINC `2085-9` ("Cholesterol in HDL [Mass/volume] in Serum or Plasma")
-    * Units: `mg/dL` (UCUM code `mg/dL`)
-
-### TODO
-
-* research and add
