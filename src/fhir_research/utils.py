@@ -9,7 +9,7 @@ create_patient:             Creates  a FHIR Patient resource
 create_observation:         Creates  a FHIR Observation resource for lab results
 create_patient_lab_bundle:  Creates  a FHIR Bundle with a Patient and their lab Observations
 flatten_fhir_bundle:        Flattens a FHIR Bundle dictionary into a pandas DataFrame
-filter_fhir_dataframe:      Filter   a FHIR DataFrame on Column <name> for value <value>
+filter_fhir_dataframe:      Filters a FHIR DataFrame on a given column for a list of codes.
 
 """
 
@@ -49,24 +49,24 @@ def create_patient(
     Returns:
         fhir.resources.patient.Patient: The FHIR Patient resource object.
     """
-    patient = Patient.construct()
+    patient = Patient.model_construct()
     patient.id = patient_id
 
     # Add Identifier
-    patient_identifier = Identifier.construct(
+    patient_identifier = Identifier.model_construct(
         system="urn:ietf:rfc:3986",  # Using a generic system for example
         value=patient_id,
     )
     patient.identifier = [patient_identifier]
 
     # Create HumanName with Meta Profile
-    human_name = HumanName.construct()
+    human_name = HumanName.model_construct()
     human_name.use = "official"
     human_name.family = family_name
     human_name.given = [given_name]
 
     # Add Meta to HumanName
-    # hn_meta = Meta.construct()
+    # hn_meta = Meta.model_construct()
     # hn_meta.profile = ["http://fhir.de/StructureDefinition/humanname-de-basis"]
     # human_name.meta = hn_meta # This line caused the error
     patient.name = [human_name]
@@ -116,15 +116,15 @@ def create_lab_observation(
     Returns:
         fhir.resources.observation.Observation: The FHIR Observation resource object.
     """
-    observation = Observation.construct()
+    observation = Observation.model_construct()
     observation.status = "final"  # Set status before id
     observation.id = observation_id
 
     # Category: Laboratory
     observation.category = [
-        CodeableConcept.construct(
+        CodeableConcept.model_construct(
             coding=[
-                Coding.construct(
+                Coding.model_construct(
                     system="http://terminology.hl7.org/CodeSystem/observation-category",
                     code="laboratory",
                     display="Laboratory",
@@ -134,9 +134,9 @@ def create_lab_observation(
     ]
 
     # Observation Code
-    observation.code = CodeableConcept.construct(
+    observation.code = CodeableConcept.model_construct(
         coding=[
-            Coding.construct(
+            Coding.model_construct(
                 system=code_system,
                 code=code,
                 display=code_display,
@@ -145,7 +145,7 @@ def create_lab_observation(
     )
 
     # Subject (Patient Reference)
-    observation.subject = Reference.construct(reference=patient_reference_str)
+    observation.subject = Reference.model_construct(reference=patient_reference_str)
 
     # Effective DateTime
     try:
@@ -172,7 +172,7 @@ def create_lab_observation(
 
     # Value Handling
     if value_quantity_value is not None and value_quantity_unit is not None:
-        observation.valueQuantity = Quantity.construct(
+        observation.valueQuantity = Quantity.model_construct(
             value=value_quantity_value,
             unit=value_quantity_unit,
             system=value_quantity_unit_system,
@@ -181,9 +181,9 @@ def create_lab_observation(
             else value_quantity_unit,  # Fallback for code
         )
     elif value_cc_system is not None and value_cc_code is not None:
-        observation.valueCodeableConcept = CodeableConcept.construct(
+        observation.valueCodeableConcept = CodeableConcept.model_construct(
             coding=[
-                Coding.construct(
+                Coding.model_construct(
                     system=value_cc_system, code=value_cc_code, display=value_cc_display
                 )
             ]
@@ -230,7 +230,7 @@ def create_patient_lab_bundle(patient_details: dict, lab_observations_details: l
         birth_date=patient_details["birth_date"],
         gender=patient_details["gender"],
     )
-    patient_entry = BundleEntry.construct()
+    patient_entry = BundleEntry.model_construct()
     # Use URN with resource ID for fullUrl, as per common practice for new resources in a bundle
     patient_entry.fullUrl = f"urn:uuid:{patient_resource.id}"
     patient_entry.resource = patient_resource
@@ -244,13 +244,13 @@ def create_patient_lab_bundle(patient_details: dict, lab_observations_details: l
         observation_resource = create_lab_observation(
             patient_reference_str=patient_reference_str, **obs_detail
         )
-        obs_entry = BundleEntry.construct()
+        obs_entry = BundleEntry.model_construct()
         obs_entry.fullUrl = f"urn:uuid:{observation_resource.id}"
         obs_entry.resource = observation_resource
         bundle_entries.append(obs_entry)
 
     # Create Bundle
-    bundle = Bundle.construct()
+    bundle = Bundle.model_construct()
     bundle.type = "collection"
     bundle.id = str(uuid.uuid4())  # Assign a unique ID to the bundle itself
     bundle.timestamp = datetime.datetime.now(
@@ -404,32 +404,58 @@ def flatten_fhir_bundle(bundle_dict: dict) -> pd.DataFrame:
     return merged_df.reset_index(drop=True)
 
 
-def filter_fhir_dataframe(df_full: pd.DataFrame, name="", value="") -> pd.DataFrame:
-    # Prepare Subset DataFrame
-    df_subset = pd.DataFrame()
-    if df_full is not None and not df_full.empty:
-        if not name:
-            df_subset = df_full.copy()
-        else:
-            if name in df_full.columns:
-                df_subset = df_full[df_full[name] == value].copy()
-                if not df_subset.empty:
-                    date_col = next(
-                        (col for col in df_subset.columns if "effectiveDateTime" in col),
-                        None,
-                    )
-                    value_col = next(
-                        (col for col in df_subset.columns if "valueQuantity_value" in col),
-                        None,
-                    )
+def filter_fhir_dataframe(
+    df_full: pd.DataFrame, column_name: str = "", codes: list[str] = None
+) -> pd.DataFrame:
+    """
+    Filters a DataFrame based on whether values in a specified column are present in a list of codes.
 
-                    if date_col:
-                        df_subset[date_col] = pd.to_datetime(df_subset[date_col])
-                    if value_col:
-                        df_subset[value_col] = pd.to_numeric(df_subset[value_col])
-            else:
-                print(f"Warning: column_name '{name}' not found. Cannot filter.")
-    else:
+    Args:
+        df_full (pd.DataFrame): The DataFrame to filter.
+        column_name (str, optional): The name of the column to filter on. Defaults to "".
+        codes (list[str], optional): A list of codes to filter by.
+                                     Rows where `df_full[column_name]` is in this list will be kept.
+                                     Defaults to None.
+
+    Returns:
+        pd.DataFrame: The filtered DataFrame. If `column_name` is empty, or `codes` is None or empty,
+                      a copy of the original DataFrame is returned. If `column_name` does not exist,
+                      a warning is printed and a copy of the original DataFrame is returned.
+    """
+    if df_full is None or df_full.empty:
         print("Warning: Initial DataFrame is empty or None. Cannot filter")
+        return pd.DataFrame() # Return empty DataFrame as per original behavior for None/empty input
 
+    if not column_name or not codes:  # codes can be None or []
+        return df_full.copy()
+
+    if column_name not in df_full.columns:
+        print(f"Warning: column_name '{column_name}' not found. Cannot filter.")
+        return df_full.copy()
+
+    df_subset = df_full[df_full[column_name].isin(codes)].copy()
+
+    if not df_subset.empty:
+        date_col = next(
+            (col for col in df_subset.columns if "effectiveDateTime" in col),
+            None,
+        )
+        value_col = next(
+            (col for col in df_subset.columns if "valueQuantity_value" in col),
+            None,
+        )
+
+        if date_col:
+            # Ensure the column is actually datetime before conversion to avoid errors
+            # if it's already in the correct type from a previous operation or source
+            if not pd.api.types.is_datetime64_any_dtype(df_subset[date_col]):
+                df_subset[date_col] = pd.to_datetime(df_subset[date_col], errors='coerce')
+        if value_col:
+            # Ensure the column is numeric before conversion
+            if not pd.api.types.is_numeric_dtype(df_subset[value_col]):
+                df_subset[value_col] = pd.to_numeric(df_subset[value_col], errors='coerce')
+
+    # If df_subset is empty after filtering, it will be returned as such.
+    # This is a change from previous where an empty filter result might still do date/value conversion on an empty frame (no-op)
+    # The current logic correctly handles an empty df_subset.
     return df_subset
