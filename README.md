@@ -16,11 +16,6 @@ You can explore the visualization interactively:
 
 - **View on GitHub Pages:** [https://wuxxin.github.io/fhir-research/](https://wuxxin.github.io/fhir-research/)
     - **Run Interactive Marimo in the Browser:** [https://wuxxin.github.io/fhir-research/marimo/](https://wuxxin.github.io/fhir-research/marimo/)
-- **Run locally with Marimo:**
-
-```sh
-uv run marimo edit notebooks/hdl_visualize.py
-```
 
 ## Setup
 
@@ -33,16 +28,16 @@ make buildenv
 ### Interactivly edit the Notebook in Marimo
 
 ```bash
-uv run marimo edit notebooks/hdl_visualize.py
+uv run marimo edit notebooks/lab_visualize.py
 ```
 
 ### Export the matplotlib plot as image
 
 ```bash
-uv run python notebooks/hdl_visualize.py -o hdl-matplotlib.png
+uv run python notebooks/lab_visualize.py -o lab-matplotlib.png
 ```
 
-![HDL-Plot](hdl-matplotlib.png)
+![LAB-Plot](lab-matplotlib.png)
 
 ## Docs
 

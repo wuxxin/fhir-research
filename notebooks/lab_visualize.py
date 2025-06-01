@@ -83,9 +83,12 @@ def _(df_full, df_subset, mo):
         display_columns = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
         # Ensure all display columns exist before trying to display them
         actual_display_columns = [col for col in display_columns if col in df_subset.columns]
-        if "code_coding_0_code" not in actual_display_columns and "code_coding_0_display" not in actual_display_columns:
+        if (
+            "code_coding_0_code" not in actual_display_columns
+            and "code_coding_0_display" not in actual_display_columns
+        ):
             # if display name is missing, add code as fallback for context
-             if "code_coding_0_code" in df_subset.columns:
+            if "code_coding_0_code" in df_subset.columns:
                 actual_display_columns.append("code_coding_0_code")
 
         mo.ui.table(
@@ -133,26 +136,27 @@ def _(bokeh, df_subset, pd):
         p = bokeh.plotting.figure(
             x_axis_type="datetime",
             title="Laboratory Values Over Time",
-            height=400, # Adjusted height
-            width=800,
+            height=600,
+            width=1024,
             x_axis_label="Date",
-            y_axis_label="Value (mg/dL)", # Generic Y-axis label
+            y_axis_label="Value (mg/dL)",  # Generic Y-axis label
         )
 
         # Define a color palette for multiple lines
         from bokeh.palettes import Category10
-        colors = Category10[10] # Palette for up to 10 lines
+
+        colors = Category10[10]  # Palette for up to 10 lines
 
         grouped = data_frame.groupby("code_coding_0_display")
 
         for i, (analyte_name, group) in enumerate(grouped):
-            color = colors[i % len(colors)] # Cycle through colors
+            color = colors[i % len(colors)]  # Cycle through colors
             p.line(
                 x=group["effectiveDateTime"],
                 y=group["valueQuantity_value"],
                 legend_label=analyte_name,
                 line_width=2,
-                color=color
+                color=color,
             )
             p.circle(
                 x=group["effectiveDateTime"],
@@ -160,7 +164,7 @@ def _(bokeh, df_subset, pd):
                 legend_label=analyte_name,
                 fill_color="white",
                 size=8,
-                color=color
+                color=color,
             )
 
         p.xaxis.formatter = bokeh.models.DatetimeTickFormatter(
@@ -190,7 +194,7 @@ def _(df_subset, matplotlib, pd):
         fig, ax = matplotlib.pyplot.subplots(figsize=(10, 6))
         ax.set_title("Laboratory Values Over Time (Matplotlib)")
         ax.set_xlabel("Date")
-        ax.set_ylabel("Value (mg/dL)") # Generic Y-axis label
+        ax.set_ylabel("Value (mg/dL)")  # Generic Y-axis label
 
         required_cols = [date_column_name, value_column_name, display_name_column]
         if (
@@ -215,15 +219,15 @@ def _(df_subset, matplotlib, pd):
                     group[value_column_name],
                     marker="o",
                     linestyle="-",
-                    label=analyte_name
+                    label=analyte_name,
                 )
 
             ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%Y-%m-%d"))
             ax.tick_params(axis="x", rotation=45)
             ax.grid(True)
-            ax.legend() # Add legend to display labels
+            ax.legend()  # Add legend to display labels
 
-        matplotlib.pyplot.tight_layout() # Call tight_layout before returning
+        matplotlib.pyplot.tight_layout()  # Call tight_layout before returning
         return fig  # Always return the figure object
 
     create_matplotlib_plot(df_subset)
