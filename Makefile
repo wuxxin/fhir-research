@@ -22,7 +22,6 @@ uv.lock: pyproject.toml ensure-uv
 
 buildenv: .venv/bin/activate ## Create build environment
 	@echo "+++ $@"
-	@uv run python -m build --wheel -o build/wheel
 
 test: buildenv ## Run Tests
 	@echo "+++ $@"
@@ -34,13 +33,14 @@ docs: buildenv ## Make Documentation and Onlinepage
 	@echo "+++ $@"
 	@mkdir -p build/site build/wheel build/notebooks/public
 	@uv run mkdocs build -f mkdocs.yml
+	@uv run python -m build --wheel -o build/wheel
 	@cp build/wheel/fhir_research-*-py3-none-any.whl build/notebooks/public
 	@cp notebooks/hdl_visualize.py build/notebooks/
-	@printf "n\n" | uv run marimo export html-wasm build/notebooks/hdl_visualize.py -o build/site/marimo --mode run
+	@printf "y\n" | uv run marimo export html-wasm build/notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
 docs-serve: docs ## Serve Documentation locally
 	@echo "+++ $@"
-	@uv run scripts/https_serve.py -d build/site
+	@uv run scripts/dev_serve.py -d build/site
 
 
 lint: buildenv ## Run Linting
