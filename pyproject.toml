@@ -23,7 +23,9 @@ description = "A project for FHIR data handling, analysis, and visualization."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "fhir_research",
     "fhir.resources>=6.4.0",
+    "build",
     "pandas",
     "bokeh",
     "altair",

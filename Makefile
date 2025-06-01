@@ -19,22 +19,22 @@ uv.lock: pyproject.toml ensure-uv
 	@echo "+++ $@"
 	@uv venv
 	@uv sync --all-extras
-	@uv pip install -e "."
 
 buildenv: .venv/bin/activate ## Create build environment
 	@echo "+++ $@"
+	@uv run python -m build --wheel -o build/wheel
 
 test: buildenv ## Run Tests
 	@echo "+++ $@"
-	@mkdir -p build
+	@mkdir -p build/test
 	@uv run scripts/generate_fhir_example.py
+	@uv run notebooks/hdl_visualize.py -o build/test/hdl-matplotlib.png
 
 docs: buildenv ## Make Documentation and Onlinepage
 	@echo "+++ $@"
-	@mkdir -p build/test build/site build/notebooks/public/
-	@uv run notebooks/hdl_visualize.py -o build/test/hdl-matplotlib.png
+	@mkdir -p build/site build/wheel build/notebooks/public
 	@uv run mkdocs build -f mkdocs.yml
-	@cp -r src/fhir_research build/notebooks/public/fhir_research
+	@cp build/wheel/fhir_research-*-py3-none-any.whl build/notebooks/public
 	@cp notebooks/hdl_visualize.py build/notebooks/
 	@printf "n\n" | uv run marimo export html-wasm build/notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
