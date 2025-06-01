@@ -1,2 +1,2 @@
-import .utils
-import .examples
+from . import examples
+from . import utils
