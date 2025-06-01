@@ -5,5 +5,33 @@
     - `Patient.address` conforms to `http://fhir.de/StructureDefinition/address-de-basis`
 - **HDL Cholesterol Observation**: Uses the core FHIR Observation resource
     - Category: `laboratory`
-    - Code: LOINC `2085-9` ("Cholesterol in HDL [Mass/volume] in Serum or Plasma")
+    - Code: LOINC `2085-9` ("Cholesterol in HDL")
     - Units: `mg/dL` (UCUM code `mg/dL`)
+- **Blood Glucose Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `2339-0` ("Glucose [Mass/volume] in Blood by Test strip")
+    - Units: `mg/dL` (UCUM code `mg/dL`)
+- **Fasting Glucose Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `1558-6` ("Glucose^fasting")
+    - Units: `mg/dL` (UCUM code `mg/dL`)
+- **Total Cholesterol Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `2093-3` ("Cholesterol")
+    - Units: `mg/dL` (UCUM code `mg/dL`)
+- **LDL Cholesterol Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `2089-1` ("Cholesterol in LDL")
+    - Units: `mg/dL` (UCUM code `mg/dL`)
+- **Gamma Glutamyl Transferase Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `2324-2` ("Gamma glutamyl transferase")
+    - Units: `U/L` (UCUM code `U/L`)
+- **Triglyceride Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `2571-8` ("Triglyceride")
+    - Units: `mg/dL` (UCUM code `mg/dL`)
+- **Cholesterol Ratio Observation**: Uses the core FHIR Observation resource
+    - Category: `laboratory`
+    - Code: LOINC `9830-1` ("Cholesterol.total/Cholesterol in HDL")
+    - Units: `ratio` (UCUM code `{ratio}`)
