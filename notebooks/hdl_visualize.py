@@ -12,6 +12,7 @@ with app.setup:
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -53,6 +54,7 @@ async def _(micropip, mo, os, sys):
     if "pyodide" in sys.modules:
         await micropip.install(module_path)
     import fhir_research
+
     return (fhir_research,)
 
 
@@ -92,7 +94,6 @@ def _(df_full, df_subset, mo):
 def _(bokeh, df_subset, pd):
     ## Plotting Functions
 
-
     def create_bokeh_plot(data_frame: pd.DataFrame):
         # Creates a Bokeh plot for HDL cholesterol over time.
         if (
@@ -105,7 +106,7 @@ def _(bokeh, df_subset, pd):
         ):
             print("Data for Bokeh plot is empty or invalid. Creating empty plot.")
             p_empty = bokeh.plotting.figure(
-                width=800, height=350, title="HDL Cholesterol Over Time"
+                width=800, height=600, title="HDL Cholesterol Over Time"
             )
             p_empty.text(
                 x=[0],
@@ -145,7 +146,6 @@ def _(bokeh, df_subset, pd):
         p.grid.grid_line_alpha = 0.3
         p.legend.location = "top_left"
         return p
-
 
     create_bokeh_plot(df_subset)
     return
@@ -189,7 +189,6 @@ def _(df_subset, matplotlib, pd):
             ax.grid(True)
 
         return fig  # Always return the figure object
-
 
     create_matplotlib_plot(df_subset)
     return (create_matplotlib_plot,)
