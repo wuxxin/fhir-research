@@ -62,11 +62,15 @@ async def _(micropip, mo, os, sys):
 def _(fhir_research):
     ## Data Processing, Inspection and Visualisaztion (Interactive)
 
-    fhir_bundle = fhir_research.examples.fhir_bundle_marimo_max()
+    # Use the new German lab example bundle
+    fhir_bundle = fhir_research.examples.fhir_bundle_german_lab_example()
     bundle_dict = fhir_bundle.model_dump()
     df_full = fhir_research.utils.flatten_fhir_bundle(bundle_dict)
+
+    # Filter for Cholesterol, HDL, and Triglycerides
+    target_loinc_codes = ["2093-3", "2085-9", "2571-8"]
     df_subset = fhir_research.utils.filter_fhir_dataframe(
-        df_full, "code_coding_0_code", "2085-9"
+        df_full, column_name="code_coding_0_code", codes=target_loinc_codes
     )
     return df_full, df_subset
 
@@ -75,8 +79,17 @@ def _(fhir_research):
 def _(df_full, df_subset, mo):
     mo.md("### Subset DataFrame")
     if df_subset is not None and not df_subset.empty:
+        # Display relevant columns for the multi-analyte view
+        display_columns = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
+        # Ensure all display columns exist before trying to display them
+        actual_display_columns = [col for col in display_columns if col in df_subset.columns]
+        if "code_coding_0_code" not in actual_display_columns and "code_coding_0_display" not in actual_display_columns:
+            # if display name is missing, add code as fallback for context
+             if "code_coding_0_code" in df_subset.columns:
+                actual_display_columns.append("code_coding_0_code")
+
         mo.ui.table(
-            df_subset[["effectiveDateTime", "valueQuantity_value"]].head(),
+            df_subset[actual_display_columns].head(),
             selection=None,
         )
     else:
@@ -95,23 +108,23 @@ def _(bokeh, df_subset, pd):
     ## Plotting Functions
 
     def create_bokeh_plot(data_frame: pd.DataFrame):
-        # Creates a Bokeh plot for HDL cholesterol over time.
+        # Creates a Bokeh plot for laboratory values over time.
+        required_cols = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
         if (
             data_frame is None
             or data_frame.empty
-            or "effectiveDateTime" not in data_frame.columns
-            or "valueQuantity_value" not in data_frame.columns
+            or not all(col in data_frame.columns for col in required_cols)
             or not pd.api.types.is_datetime64_any_dtype(data_frame["effectiveDateTime"])
             or not pd.api.types.is_numeric_dtype(data_frame["valueQuantity_value"])
         ):
             print("Data for Bokeh plot is empty or invalid. Creating empty plot.")
             p_empty = bokeh.plotting.figure(
-                width=800, height=600, title="HDL Cholesterol Over Time"
+                width=800, height=400, title="Laboratory Values Over Time"
             )
             p_empty.text(
                 x=[0],
                 y=[0],
-                text=["No valid HDL data to plot. Check data preparation steps."],
+                text=["No valid data to plot. Check data preparation steps."],
                 text_align="center",
                 text_baseline="middle",
             )
@@ -119,25 +132,37 @@ def _(bokeh, df_subset, pd):
 
         p = bokeh.plotting.figure(
             x_axis_type="datetime",
-            title="HDL Cholesterol Over Time",
-            height=350,
+            title="Laboratory Values Over Time",
+            height=400, # Adjusted height
             width=800,
             x_axis_label="Date",
-            y_axis_label="HDL (mg/dL)",
+            y_axis_label="Value (mg/dL)", # Generic Y-axis label
         )
-        p.line(
-            x=data_frame["effectiveDateTime"],
-            y=data_frame["valueQuantity_value"],
-            legend_label="HDL",
-            line_width=2,
-        )
-        p.circle(
-            x=data_frame["effectiveDateTime"],
-            y=data_frame["valueQuantity_value"],
-            legend_label="HDL",
-            fill_color="white",
-            size=8,
-        )
+
+        # Define a color palette for multiple lines
+        from bokeh.palettes import Category10
+        colors = Category10[10] # Palette for up to 10 lines
+
+        grouped = data_frame.groupby("code_coding_0_display")
+
+        for i, (analyte_name, group) in enumerate(grouped):
+            color = colors[i % len(colors)] # Cycle through colors
+            p.line(
+                x=group["effectiveDateTime"],
+                y=group["valueQuantity_value"],
+                legend_label=analyte_name,
+                line_width=2,
+                color=color
+            )
+            p.circle(
+                x=group["effectiveDateTime"],
+                y=group["valueQuantity_value"],
+                legend_label=analyte_name,
+                fill_color="white",
+                size=8,
+                color=color
+            )
+
         p.xaxis.formatter = bokeh.models.DatetimeTickFormatter(
             days="%Y-%m-%d", months="%Y-%m", years="%Y"
         )
@@ -156,38 +181,49 @@ def _(df_subset, matplotlib, pd):
     def create_matplotlib_plot(data_frame: pd.DataFrame):
         date_column_name = "effectiveDateTime"
         value_column_name = "valueQuantity_value"
-        matplotlib.pyplot.tight_layout()
-        fig, ax = matplotlib.pyplot.subplots(figsize=(10, 6))
-        ax.set_title("HDL Cholesterol Over Time (Matplotlib)")
-        ax.set_xlabel("Date")
-        ax.set_ylabel("HDL (mg/dL)")
+        display_name_column = "code_coding_0_display"
 
+        # It's good practice to call tight_layout() after all plotting elements are added,
+        # or at least before saving/showing the plot, so moving it later.
+        # matplotlib.pyplot.tight_layout()
+
+        fig, ax = matplotlib.pyplot.subplots(figsize=(10, 6))
+        ax.set_title("Laboratory Values Over Time (Matplotlib)")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Value (mg/dL)") # Generic Y-axis label
+
+        required_cols = [date_column_name, value_column_name, display_name_column]
         if (
             data_frame is None
             or data_frame.empty
-            or date_column_name not in data_frame.columns
-            or value_column_name not in data_frame.columns
+            or not all(col in data_frame.columns for col in required_cols)
         ):
             print("Data for Matplotlib plot is empty or invalid. Creating empty plot.")
             ax.text(
                 0.5,
                 0.5,
-                "No valid HDL data to plot.",
+                "No valid data to plot.",
                 horizontalalignment="center",
                 verticalalignment="center",
                 transform=ax.transAxes,
             )
         else:
-            ax.plot(
-                data_frame[date_column_name],
-                data_frame[value_column_name],
-                marker="o",
-                linestyle="-",
-            )
+            grouped = data_frame.groupby(display_name_column)
+            for analyte_name, group in grouped:
+                ax.plot(
+                    group[date_column_name],
+                    group[value_column_name],
+                    marker="o",
+                    linestyle="-",
+                    label=analyte_name
+                )
+
             ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%Y-%m-%d"))
             ax.tick_params(axis="x", rotation=45)
             ax.grid(True)
+            ax.legend() # Add legend to display labels
 
+        matplotlib.pyplot.tight_layout() # Call tight_layout before returning
         return fig  # Always return the figure object
 
     create_matplotlib_plot(df_subset)
