@@ -45,10 +45,11 @@ def _(mo):
         from fhir_research.examples import fhir_bundle_marimo_max
     except ModuleNotFoundError:
         import micropip
+        import asyncio
 
         module_name = "fhir_research-0.1.0-py3-none-any.whl"
         module_path = os.path.join(mo.notebook_location(), "public", module_name)
-        await micropip.install(module_path)
+        asyncio.run(micropip.install(module_path))
 
         from fhir_research.utils import flatten_fhir_bundle, filter_fhir_dataframe
         from fhir_research.examples import fhir_bundle_marimo_max
