@@ -11,7 +11,7 @@ def main():
     bundle_json_str = fhir_bundle.model_dump_json(indent=2)
     bundle_dict = fhir_bundle.model_dump()
     df_full = flatten_fhir_bundle(bundle_dict)
-    df_subset = filter_fhir_dataframe(df_full, "code_coding_0_code", "2085-9")
+    df_subset = filter_fhir_dataframe(df_full, column_name="code_coding_0_code", codes=["2085-9"])
 
     print("--- FHIR Bundle (JSON) ---")
     print(bundle_json_str)
