@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def generate_self_signed_certificate(hostname: str) -> dict[str, str]:
-    """Generates a self-signed certificate and private key."""
+    """Generates a self-signed certificate and private key for the given hostname."""
     logger.info(f"Generating self-signed certificate for: {hostname}")
 
     private_key = rsa.generate_private_key(
@@ -72,18 +72,34 @@ def generate_self_signed_certificate(hostname: str) -> dict[str, str]:
     }
 
 
+class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
+    """Custom HTTP request handler to set the HTTP protocol version."""
+
+    protocol_version = "HTTP/1.1"
+
+    def __init__(self, request, client_address, server, *, directory=None):
+        # The 'directory' argument is passed from SSLThreadingHTTPServer
+        #   and is a keyword-only argument for SimpleHTTPRequestHandler's __init__
+        super().__init__(request, client_address, server, directory=directory)
+
+
 class SSLThreadingHTTPServer(ThreadingHTTPServer):
+    """A threading HTTP server that uses SSL and can serve from a specified directory."""
+
     def __init__(self, server_address, HandlerClass, ssl_context, directory):
         super().__init__(server_address, HandlerClass)
         self.ssl_context = ssl_context
+        # Directory to serve files from
         self.directory = directory
 
     def get_request(self):
+        """Gets the request and wraps the socket with SSL."""
         conn, addr = self.socket.accept()
         return self.ssl_context.wrap_socket(conn, server_side=True), addr
 
     def finish_request(self, request, client_address):
-        """Finish one request by creating an instance of RequestHandlerClass."""
+        """Finish one request by creating an instance of the RequestHandlerClass,
+        passing the serving directory to it."""
         self.RequestHandlerClass(request, client_address, self, directory=self.directory)
 
 
@@ -92,30 +108,30 @@ if __name__ == "__main__":
         description="A simple self-signed HTTPS server for serving static files."
     )
     parser.add_argument(
-        "-c",
-        "--cert-name",
+        "-H",
+        "--hostname",
         default=socket.getfqdn(),
-        help="hostname for certificate (default: %(default)s)",
+        help="Hostname for the certificate (default: %(default)s)",
     )
     parser.add_argument(
         "-b",
         "--bind",
         metavar="ADDRESS",
         default="0.0.0.0",
-        help="bind to this address (default: %(default)s)",
+        help="Bind to this address (default: %(default)s)",
     )
     parser.add_argument(
         "-d",
         "--directory",
         default=os.getcwd(),
-        help="serve this directory (default: %(default)s)",
+        help="Serve this directory (default: %(default)s)",
     )
     parser.add_argument(
         "port",
         default=8443,
         type=int,
         nargs="?",
-        help="bind to this port (default: %(default)s)",
+        help="Bind to this port (default: %(default)s)",
     )
     args = parser.parse_args()
 
@@ -125,7 +141,7 @@ if __name__ == "__main__":
 
     logger.info(f"Preparing to serve files from: {os.path.abspath(args.directory)}")
 
-    cert_data = generate_self_signed_certificate(args.cert_name)
+    cert_data = generate_self_signed_certificate(args.hostname)
     httpd = None
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -142,18 +158,20 @@ if __name__ == "__main__":
 
         try:
             httpd = SSLThreadingHTTPServer(
-                (args.bind, args.port), SimpleHTTPRequestHandler, ssl_context, args.directory
+                (args.bind, args.port), CustomHTTPRequestHandler, ssl_context, args.directory
             )
-            logger.info(
-                f"Serving HTTPS on https://{args.cert_name}:{args.port}/ (Ctrl+C to quit)"
-            )
+            logger.info(f"Serving on https://{args.hostname}:{args.port}/ (Ctrl+C to quit)")
             httpd.serve_forever()
         except OSError as e:
             logger.error(f"Error starting server: {e}")
             if e.errno == 98:
+                # EADDRINUSE
                 logger.error(f"Port {args.port} is already in use.")
-            elif e.errno == 13:  # EACCES
-                logger.error("Permission denied. You need privileges below port 1024.")
+            elif e.errno == 13:
+                # EACCES
+                logger.error(
+                    "Permission denied. Insufficient privileges to bind to port or address"
+                )
             exit(1)
         except KeyboardInterrupt:
             logger.info("Server stopped by user (Ctrl+C)")

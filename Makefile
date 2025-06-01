@@ -38,6 +38,11 @@ docs: buildenv ## Make Documentation and Onlinepage
 	@cp notebooks/hdl_visualize.py build/notebooks/
 	@printf "n\n" | uv run marimo export html-wasm build/notebooks/hdl_visualize.py -o build/site/marimo --mode run
 
+docs-serve: docs ## Serve Documentation locally
+	@echo "+++ $@"
+	@uv run scripts/https_serve.py -d build/site
+
+
 lint: buildenv ## Run Linting
 	@echo "+++ $@"
 	@uv run flake8 . --exclude .git,__pycache__,build,.venv \

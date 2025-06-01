@@ -1,17 +1,21 @@
 import marimo
 
 __generated_with = "0.13.15"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", app_title="fhir-research")
+
+with app.setup:
+    # Initialization code that runs before all other cells
+    # test
+    pass
 
 
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -26,55 +30,42 @@ def _(mo):
 
 
 @app.cell
-def _(mo):
-    import pandas as pd
-    import json
-    import argparse
+def _():
     import os
     import sys
+    import argparse
 
-    from datetime import datetime, timedelta, date
+    import pandas as pd
+    import bokeh
+    import matplotlib
 
-    from bokeh.plotting import figure
-    from bokeh.models import DatetimeTickFormatter
-    import matplotlib.pyplot as plt
-    import matplotlib.dates as mdates
-
-    try:
-        from fhir_research.utils import flatten_fhir_bundle, filter_fhir_dataframe
-        from fhir_research.examples import fhir_bundle_marimo_max
-    except ModuleNotFoundError:
+    if "pyodide" in sys.modules:
         import micropip
-        import asyncio
-
-        module_name = "fhir_research-0.1.0-py3-none-any.whl"
-        module_path = os.path.join(mo.notebook_location(), "public", module_name)
-        asyncio.run(micropip.install(module_path))
-
-        from fhir_research.utils import flatten_fhir_bundle, filter_fhir_dataframe
-        from fhir_research.examples import fhir_bundle_marimo_max
-
-    return (
-        DatetimeTickFormatter,
-        argparse,
-        fhir_bundle_marimo_max,
-        figure,
-        filter_fhir_dataframe,
-        flatten_fhir_bundle,
-        mdates,
-        pd,
-        plt,
-    )
+    else:
+        micropip = None
+    return argparse, bokeh, matplotlib, micropip, os, pd, sys
 
 
 @app.cell
-def _(fhir_bundle_marimo_max, filter_fhir_dataframe, flatten_fhir_bundle):
+async def _(micropip, mo, os, sys):
+    module_name = "fhir_research-0.1.0-py3-none-any.whl"
+    module_path = os.path.join(mo.notebook_location(), "public", module_name)
+    if "pyodide" in sys.modules:
+        await micropip.install(module_path)
+    import fhir_research
+    return (fhir_research,)
+
+
+@app.cell
+def _(fhir_research):
     ## Data Processing, Inspection and Visualisaztion (Interactive)
 
-    fhir_bundle = fhir_bundle_marimo_max()
+    fhir_bundle = fhir_research.examples.fhir_bundle_marimo_max()
     bundle_dict = fhir_bundle.model_dump()
-    df_full = flatten_fhir_bundle(bundle_dict)
-    df_subset = filter_fhir_dataframe(df_full, "code_coding_0_code", "2085-9")
+    df_full = fhir_research.utils.flatten_fhir_bundle(bundle_dict)
+    df_subset = fhir_research.utils.filter_fhir_dataframe(
+        df_full, "code_coding_0_code", "2085-9"
+    )
     return df_full, df_subset
 
 
@@ -98,8 +89,9 @@ def _(df_full, df_subset, mo):
 
 
 @app.cell
-def _(DatetimeTickFormatter, df_subset, figure, pd):
+def _(bokeh, df_subset, pd):
     ## Plotting Functions
+
 
     def create_bokeh_plot(data_frame: pd.DataFrame):
         # Creates a Bokeh plot for HDL cholesterol over time.
@@ -112,7 +104,9 @@ def _(DatetimeTickFormatter, df_subset, figure, pd):
             or not pd.api.types.is_numeric_dtype(data_frame["valueQuantity_value"])
         ):
             print("Data for Bokeh plot is empty or invalid. Creating empty plot.")
-            p_empty = figure(width=800, height=350, title="HDL Cholesterol Over Time")
+            p_empty = bokeh.plotting.figure(
+                width=800, height=350, title="HDL Cholesterol Over Time"
+            )
             p_empty.text(
                 x=[0],
                 y=[0],
@@ -122,7 +116,7 @@ def _(DatetimeTickFormatter, df_subset, figure, pd):
             )
             return p_empty
 
-        p = figure(
+        p = bokeh.plotting.figure(
             x_axis_type="datetime",
             title="HDL Cholesterol Over Time",
             height=350,
@@ -143,23 +137,27 @@ def _(DatetimeTickFormatter, df_subset, figure, pd):
             fill_color="white",
             size=8,
         )
-        p.xaxis.formatter = DatetimeTickFormatter(days="%Y-%m-%d", months="%Y-%m", years="%Y")
+        p.xaxis.formatter = bokeh.models.DatetimeTickFormatter(
+            days="%Y-%m-%d", months="%Y-%m", years="%Y"
+        )
         p.xaxis.axis_label_text_font_style = "normal"
         p.yaxis.axis_label_text_font_style = "normal"
         p.grid.grid_line_alpha = 0.3
         p.legend.location = "top_left"
         return p
 
+
     create_bokeh_plot(df_subset)
     return
 
 
 @app.cell
-def _(df_subset, mdates, pd, plt):
+def _(df_subset, matplotlib, pd):
     def create_matplotlib_plot(data_frame: pd.DataFrame):
         date_column_name = "effectiveDateTime"
         value_column_name = "valueQuantity_value"
-        fig, ax = plt.subplots(figsize=(10, 6))
+        matplotlib.pyplot.tight_layout()
+        fig, ax = matplotlib.pyplot.subplots(figsize=(10, 6))
         ax.set_title("HDL Cholesterol Over Time (Matplotlib)")
         ax.set_xlabel("Date")
         ax.set_ylabel("HDL (mg/dL)")
@@ -179,21 +177,19 @@ def _(df_subset, mdates, pd, plt):
                 verticalalignment="center",
                 transform=ax.transAxes,
             )
-            plt.tight_layout()
-            return fig  # Return the figure object
-
-        ax.plot(
-            data_frame[date_column_name],
-            data_frame[value_column_name],
-            marker="o",
-            linestyle="-",
-        )
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-        ax.tick_params(axis="x", rotation=45)
-        ax.grid(True)
-        plt.tight_layout()
+        else:
+            ax.plot(
+                data_frame[date_column_name],
+                data_frame[value_column_name],
+                marker="o",
+                linestyle="-",
+            )
+            ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%Y-%m-%d"))
+            ax.tick_params(axis="x", rotation=45)
+            ax.grid(True)
 
         return fig  # Always return the figure object
+
 
     create_matplotlib_plot(df_subset)
     return (create_matplotlib_plot,)
