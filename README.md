@@ -5,7 +5,7 @@
 ## Python Medical Data Science Project
 
 This project demonstrates the use of Python for handling and visualizing medical data,
-specifically focusing on FHIR resources, pandas for data analysis, Bokeh and matplotlib for visualization.
+specifically focusing on FHIR resources, pandas for data analysis, Bokeh, Matplotlib, and Altair for visualization.
 
 It includes utilities for creating example FHIR Patient and FHIR Observation data,
 flattening FHIR bundles for analysis and example notebooks in Marimo for visualization.
