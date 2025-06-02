@@ -39,12 +39,13 @@ def _():
     import pandas as pd
     import bokeh
     import matplotlib
+    import altair as alt
 
     if "pyodide" in sys.modules:
         import micropip
     else:
         micropip = None
-    return argparse, bokeh, matplotlib, micropip, os, pd, sys
+    return argparse, alt, bokeh, matplotlib, micropip, os, pd, sys
 
 
 @app.cell(hide_code=True)
@@ -88,9 +89,45 @@ def _(df_subset, mo):
 
 
 @app.cell
-def _(bokeh, df_subset, pd):
+def _(alt, df_subset, pd):
     ## Plotting Functions
 
+    def create_altair_chart(data_frame: pd.DataFrame):
+        # Creates an Altair chart for laboratory values over time.
+        required_cols = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
+        if (
+            data_frame is None
+            or data_frame.empty
+            or not all(col in data_frame.columns for col in required_cols)
+        ):
+            print("Data for Altair plot is empty or invalid. Creating empty chart.")
+            # Return an empty chart with a text annotation
+            return alt.Chart().mark_text(
+                text="No valid data to plot. Check data preparation steps.",
+                align="center",
+                baseline="middle"
+            ).properties(
+                title="Laboratory Values Over Time (Altair)",
+                width=800,
+                height=400
+            )
+
+        chart = alt.Chart(data_frame).mark_point().encode(
+            x=alt.X('effectiveDateTime:T', title='Date', axis=alt.Axis(format='%Y-%m-%d')),
+            y=alt.Y('valueQuantity_value:Q', title='Value (mg/dL)'),
+            color='code_coding_0_display:N',
+            tooltip=['code_coding_0_display', 'effectiveDateTime', 'valueQuantity_value']
+        ).properties(
+            title="Laboratory Values Over Time (Altair)",
+            width=960,
+            height=600
+        ).interactive()
+        return chart
+    return (create_altair_chart,)
+
+
+@app.cell
+def _(bokeh, df_subset, pd):
     def create_bokeh_plot(data_frame: pd.DataFrame):
         # Creates a Bokeh plot for laboratory values over time.
         required_cols = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
@@ -213,6 +250,12 @@ def _(df_subset, matplotlib, pd):
 
     create_matplotlib_plot(df_subset)
     return (create_matplotlib_plot,)
+
+
+@app.cell
+def _(create_altair_chart, df_subset):
+    create_altair_chart(df_subset)
+    return
 
 
 @app.cell
