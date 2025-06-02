@@ -31,7 +31,7 @@ dependencies = [
     "altair",
     "pillow",
     "matplotlib",
-    "marimo[recommended]",
+    "marimo[recommended,lsp]",
 ]
 
 [project.optional-dependencies]

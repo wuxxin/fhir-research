@@ -30,7 +30,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import os
     import sys
@@ -47,7 +47,7 @@ def _():
     return argparse, bokeh, matplotlib, micropip, os, pd, sys
 
 
-@app.cell
+@app.cell(hide_code=True)
 async def _(micropip, mo, os, sys):
     module_name = "fhir_research-0.1.0-py3-none-any.whl"
     module_path = os.path.join(mo.notebook_location(), "public", module_name)
@@ -58,7 +58,7 @@ async def _(micropip, mo, os, sys):
     return (fhir_research,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(fhir_research):
     ## Data Processing, Inspection and Visualisaztion (Interactive)
 
@@ -72,37 +72,18 @@ def _(fhir_research):
     df_subset = fhir_research.utils.filter_fhir_dataframe(
         df_full, column_name="code_coding_0_code", codes=target_loinc_codes
     )
-    return df_full, df_subset
+    return (df_subset,)
 
 
 @app.cell
-def _(df_full, df_subset, mo):
-    mo.md("### Subset DataFrame")
-    if df_subset is not None and not df_subset.empty:
-        # Display relevant columns for the multi-analyte view
-        display_columns = ["effectiveDateTime", "valueQuantity_value", "code_coding_0_display"]
-        # Ensure all display columns exist before trying to display them
-        actual_display_columns = [col for col in display_columns if col in df_subset.columns]
-        if (
-            "code_coding_0_code" not in actual_display_columns
-            and "code_coding_0_display" not in actual_display_columns
-        ):
-            # if display name is missing, add code as fallback for context
-            if "code_coding_0_code" in df_subset.columns:
-                actual_display_columns.append("code_coding_0_code")
+def _(mo):
+    mo.md(r"""## Filtered SubSet DataFrame (First 5)""")
+    return
 
-        mo.ui.table(
-            df_subset[actual_display_columns].head(),
-            selection=None,
-        )
-    else:
-        mo.md("`df_subset` is empty or not yet loaded.")
 
-    mo.md("### All DataFrame  - First 5 rows")
-    if df_full is not None and not df_full.empty:
-        mo.ui.table(df_full.head(), selection=None)
-    else:
-        mo.md("`df_full` is empty or not yet loaded.")
+@app.cell(hide_code=True)
+def _(df_subset, mo):
+    mo.ui.table(df_subset.head(), selection=None)
     return
 
 
@@ -136,8 +117,8 @@ def _(bokeh, df_subset, pd):
         p = bokeh.plotting.figure(
             x_axis_type="datetime",
             title="Laboratory Values Over Time",
+            width=960,
             height=600,
-            width=1024,
             x_axis_label="Date",
             y_axis_label="Value (mg/dL)",  # Generic Y-axis label
         )
