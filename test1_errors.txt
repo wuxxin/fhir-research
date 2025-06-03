@@ -1,0 +1,13 @@
+Search Query: benefits of remote work
+
+Processing articles (errors and progress will be printed to stderr)...
+--- Processing Article 1: Six Reasons Why Remote Work Is Good For Employees And Your ... - Forbes ---
+Successfully processed and added: Six Reasons Why Remote Work Is Good For Employees And Your ... - Forbes
+--- Processing Article 2: 17 Key Benefits of Remote Work for Employers and Employees - CareerFoundry ---
+Successfully processed and added: 17 Key Benefits of Remote Work for Employers and Employees - CareerFoundry
+--- Processing Article 3: 10 Benefits of Working Remotely (With Challenges and Tips) ---
+Error fetching URL https://www.indeed.com/career-advice/career-development/benefits-of-working-remotely: 403 Client Error: Forbidden for url: https://www.indeed.com/career-advice/career-development/benefits-of-working-remotely
+--- Processing Article 4: 7 Benefits of Working From Home (and 7 Drawbacks) ---
+Error fetching URL https://money.usnews.com/money/blogs/outside-voices-careers/articles/pros-and-cons-of-working-from-home: HTTPSConnectionPool(host='money.usnews.com', port=443): Read timed out. (read timeout=10)
+--- Processing Article 5: 10 Undeniable Benefits Of Working From Home, According To Science ---
+Successfully processed and added: 10 Undeniable Benefits Of Working From Home, According To Science

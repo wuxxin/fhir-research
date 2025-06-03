@@ -1,0 +1,13 @@
+Search Query: C++ vs Rust performance 2023
+
+Processing articles (errors and progress will be printed to stderr)...
+--- Processing Article 1: Rust vs C++: A Performance Comparison | by Dmytro Gordon - Medium ---
+Successfully processed and added: Rust vs C++: A Performance Comparison | by Dmytro Gordon - Medium
+--- Processing Article 2: Rust Vs C++ Performance: When Speed Matters - BairesDev ---
+Successfully processed and added: Rust Vs C++ Performance: When Speed Matters - BairesDev
+--- Processing Article 3: Rust vs. C++: Differences and use cases explained | TechTarget ---
+Successfully processed and added: Rust vs. C++: Differences and use cases explained | TechTarget
+--- Processing Article 4: Rust Vs. C++: an Utmost Comparison of Performance, Speed and Safety ---
+Successfully processed and added: Rust Vs. C++: an Utmost Comparison of Performance, Speed and Safety
+--- Processing Article 5: C++ vs Rust: Which Is Faster in Performance? - cppscripts.com ---
+Successfully processed and added: C++ vs Rust: Which Is Faster in Performance? - cppscripts.com
