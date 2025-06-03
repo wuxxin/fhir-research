@@ -1,0 +1,13 @@
+Search Query: best hiking trails california
+
+Processing articles (errors and progress will be printed to stderr)...
+--- Processing Article 1: 10 Best trails and hikes in California | AllTrails ---
+Error fetching URL https://www.alltrails.com/us/california: 403 Client Error: Forbidden for url: https://www.alltrails.com/us/california
+--- Processing Article 2: Best 12 hikes in California - Lonely Planet ---
+Successfully processed and added: Best 12 hikes in California - Lonely Planet
+--- Processing Article 3: 13 Incredible Hikes in California • 2025 INSIDER TRAIL GUIDE ---
+Successfully processed and added: 13 Incredible Hikes in California • 2025 INSIDER TRAIL GUIDE
+--- Processing Article 4: Best Hikes in California: 17 Gorgeous Hiking Trails ---
+Successfully processed and added: Best Hikes in California: 17 Gorgeous Hiking Trails
+--- Processing Article 5: 12 Best Hiking Trails In California That You HAVE To Do At Least Once ---
+Successfully processed and added: 12 Best Hiking Trails In California That You HAVE To Do At Least Once

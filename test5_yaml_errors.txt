@@ -1,0 +1,13 @@
+Search Query: what is 'generative ai'?
+
+Processing articles (errors and progress will be printed to stderr)...
+--- Processing Article 1: What is Generative AI? - IBM ---
+Successfully processed and added: What is Generative AI? - IBM
+--- Processing Article 2: Generative artificial intelligence - Wikipedia ---
+Successfully processed and added: Generative artificial intelligence - Wikipedia
+--- Processing Article 3: What is Generative AI? | GeeksforGeeks ---
+Successfully processed and added: What is Generative AI? | GeeksforGeeks
+--- Processing Article 4: Explained: Generative AI | MIT News | Massachusetts Institute of Technology ---
+Successfully processed and added: Explained: Generative AI | MIT News | Massachusetts Institute of Technology
+--- Processing Article 5: What Is Generative AI? Definition, Applications, and Impact ---
+Successfully processed and added: What Is Generative AI? Definition, Applications, and Impact

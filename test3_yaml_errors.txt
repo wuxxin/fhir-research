@@ -1,0 +1,13 @@
+Search Query: best national parks usa
+
+Processing articles (errors and progress will be printed to stderr)...
+--- Processing Article 1: 19 Best National Parks to Visit in the U.S. for 2025 - U.S. News Travel ---
+Error fetching URL https://travel.usnews.com/rankings/best-national-parks-in-the-usa/: HTTPSConnectionPool(host='travel.usnews.com', port=443): Read timed out. (read timeout=10)
+--- Processing Article 2: All 63 US National Parks Ranked by Experts (Best to Worst) ---
+Successfully processed and added: All 63 US National Parks Ranked by Experts (Best to Worst)
+--- Processing Article 3: 20 Best National Parks in the U.S. - Travel ---
+Successfully processed and added: 20 Best National Parks in the U.S. - Travel
+--- Processing Article 4: Top 10 Best National Parks In The U.S. For 2025 - TheTravel ---
+Successfully processed and added: Top 10 Best National Parks In The U.S. For 2025 - TheTravel
+--- Processing Article 5: 27 Best National Parks in the USA to Visit in 2025 - Time Out ---
+Successfully processed and added: 27 Best National Parks in the USA to Visit in 2025 - Time Out
